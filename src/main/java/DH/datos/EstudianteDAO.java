@@ -4,19 +4,22 @@ package DH.datos;
 import DH.conexion.Conexion;
 import DH.dominio.Estudiante;
 
-import java.sql.Connection;
+import java.sql.Connection;     
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import static DH.conexion.Conexion.getConnection;
+
 //Data Access Object
 public class EstudianteDAO {
+
     public List<Estudiante> listarEstudiantes(){
         List<Estudiante> estudiantes = new ArrayList<>();
         PreparedStatement ps;
         ResultSet rs;
-        Connection con  = Conexion.getConnection();
+        Connection con  = getConnection();
         String sql = "SELECT * FROM estudiante ORDER BY id_estudiante";
 
         try {
@@ -49,7 +52,7 @@ public class EstudianteDAO {
     public boolean buscarEstudiantePorId(Estudiante estudiante){
         PreparedStatement ps;
         ResultSet rs;
-        Connection con = Conexion.getConnection();
+        Connection con = getConnection();
         String sql = "SELECT * FROM estudiante WHERE id_estudiante = ?";
 
         try {
@@ -77,9 +80,45 @@ public class EstudianteDAO {
         return false;
     }
 
+    public boolean agregarEstudiante(Estudiante estudiante){
+        PreparedStatement ps;
+        Connection con = getConnection();
+        String sql = "INSERT INTO estudiante(nombre, apellido, telefono, email) VALUES(?,?,?,?)";
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setString(1, estudiante.getNombre());
+            ps.setString(2, estudiante.getApellido());
+            ps.setString(3, estudiante.getTelefono());
+            ps.setString(4, estudiante.getEmail());
+            ps.execute();
+            return true;
+        } catch (Exception e){
+            System.out.println("Error al agregar estudiante: " + e.getMessage());
+        } finally {
+            try {
+                con.close();
+            } catch (Exception e) {
+                System.out.println("Error al cerrar conexion: " + e.getMessage());
+            }
+        }
+        return false;
+    }
+
 
     public static void main(String[] args) {
         var estudianteDao = new EstudianteDAO();
+
+        // Agregar Estudiante
+//        var nuevoEstudiante = new Estudiante("Carlos", "Lara", "55117788", "carlos@mail.com");
+//        var agregado = estudianteDao.agregarEstudiante(nuevoEstudiante);
+//        if(agregado){
+//            System.out.println("Estudiante agregado correctamente!: " + nuevoEstudiante);
+//        }else {
+//            System.out.println("No se agrego el estudiante, " + nuevoEstudiante);
+//        }
+
+        //Listar Estudiantes Prueba
+
         System.out.println("Listado Estudiantes: ");
         List<Estudiante> estudiantes = estudianteDao.listarEstudiantes();
         estudiantes.forEach(System.out::println);
