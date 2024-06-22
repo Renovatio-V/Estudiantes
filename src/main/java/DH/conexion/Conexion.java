@@ -23,9 +23,10 @@ public class Conexion {
     }
 
     public static void main(String[] args) {
-        var conexion = Conexion.getConnection();
+        var conexion = getConnection();
         if (conexion != null){
             System.out.println("Conexion exitosa: " + conexion);
+            System.out.println("Local Host: 3306 | SQL connection");
         } else {
             System.out.println("Error al conectarse");
         }

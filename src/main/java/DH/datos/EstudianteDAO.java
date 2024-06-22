@@ -1,7 +1,6 @@
 package DH.datos;
 
 
-import DH.conexion.Conexion;
 import DH.dominio.Estudiante;
 
 import java.sql.Connection;     
@@ -104,6 +103,53 @@ public class EstudianteDAO {
         return false;
     }
 
+    public boolean modificarEstudiante(Estudiante estudiante){
+        PreparedStatement ps;
+        Connection con = getConnection();
+        String sql = "UPDATE estudiante SET nombre=?, apellido=?, telefono=?, email=? WHERE id_estudiante = ?";
+        try{
+            ps = con.prepareStatement(sql);
+            ps.setString(1, estudiante.getNombre());
+            ps.setString(2, estudiante.getApellido());
+            ps.setString(3, estudiante.getTelefono());
+            ps.setString(4, estudiante.getEmail());
+            ps.setInt(5, estudiante.getIdEstudiante());
+            ps.execute();
+            return true;
+        } catch (Exception e){
+            System.out.println("Error al modificar estudiante: " + e.getMessage());
+        } finally {
+            try{
+                con.close();
+            }catch (Exception e){
+                System.out.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+
+        return false;
+    }
+
+    public boolean eliminarEstudiante(Estudiante estudiante){
+        PreparedStatement ps;
+        Connection con = getConnection();
+        String sql = "DELETE FROM estudiante WHERE id_estudiante = ?";
+        try{
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, estudiante.getIdEstudiante());
+            ps.execute();
+            return true;
+        } catch (Exception e){
+            System.out.println("Error al eliminar el estudiante: " + e.getMessage());
+        } finally {
+            try{
+                con.close();
+            }catch (Exception e){
+                System.out.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+        return false;
+    }
+
 
     public static void main(String[] args) {
         var estudianteDao = new EstudianteDAO();
@@ -117,8 +163,27 @@ public class EstudianteDAO {
 //            System.out.println("No se agrego el estudiante, " + nuevoEstudiante);
 //        }
 
-        //Listar Estudiantes Prueba
+        //Modificar un estudiante Existente
+//        var estudianteModificar = new Estudiante(2, "Manuel Fernando", "Cano Vargas", "3113581135", "mfcano@gmail.com");
+//        var modificado = estudianteDao.modificarEstudiante(estudianteModificar);
+//        if(modificado){
+//            System.out.println("Estudiante modificado: " + estudianteModificar);
+//        } else {
+//            System.out.println("No se modifico el estudiante, info: " + estudianteModificar);
+//        }
 
+        //Eliminar Estudiante
+        var estudianteEliminar = new Estudiante(111);
+        var eliminado = estudianteDao.eliminarEstudiante(estudianteEliminar);
+        if (eliminado){
+            System.out.println("Estudiante eliminado: " + estudianteEliminar);
+        } else {
+            System.out.println("No se pudo eliminar el estudiante: " + estudianteEliminar);
+        }
+
+
+
+        //Listar Estudiantes Prueba
         System.out.println("Listado Estudiantes: ");
         List<Estudiante> estudiantes = estudianteDao.listarEstudiantes();
         estudiantes.forEach(System.out::println);
